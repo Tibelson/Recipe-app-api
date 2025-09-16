@@ -16,6 +16,9 @@ EXPOSE 8000
 ARG DEV=false
 RUN python -m venv /py &&\
     /py/bin/pip install --upgrade pip &&\
+    apk add --no-cache postgresql-client && \
+    apk add --no-cache --virtual .tmp-buld-deps  \
+    build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt &&\
     if [ "$DEV" = "true" ];  \
     then /py/bin/pip install -r /tmp/requirements.dev.txt; \
