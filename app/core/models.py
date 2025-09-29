@@ -7,9 +7,9 @@ from django.contrib.auth.models import(
 )
 class UserManager(BaseUserManager):
     
-    def create_user(self, email, password=None, **extra_field):
+    def create_user(self, email, password=None, **extra_fields):
 
-        user = self.model(email=self.normalize_email(email), **extra_field)
+        user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
@@ -35,4 +35,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
      
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+    
