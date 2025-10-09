@@ -1,4 +1,4 @@
-FROM python:3.9-alpine3.13
+FROM python:3.9-alpine3.18
 LABEL maintainer="tibelson.com"
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -17,7 +17,7 @@ ARG DEV=false
 RUN python -m venv /py &&\
     /py/bin/pip install --upgrade pip &&\
     apk add --no-cache postgresql-client && \
-    apk add --no-cache --virtual .tmp-buld-deps  \
+    apk add --no-cache --virtual .tmp-build-deps  \
     build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt &&\
     if [ "$DEV" = "true" ];  \
