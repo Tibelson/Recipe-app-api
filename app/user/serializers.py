@@ -14,6 +14,17 @@ class UserSerializers(serializers.ModelSerializer):
         """create and return a user with encrypted cred"""
         return get_user_model().objects.create_user(**validated_data)
     
+    def update(self, instance, validated_data):
+        """update and return user"""
+        password = validated_data.pop('password',None)
+        user = super().update(instance, validated_data)
+
+        if password:
+            user.set_password(password)
+            user.save()
+
+        return user
+
 class AuthTokenSerializer(serializers.Serializer):
     """serializer for the user auth token"""
     email = serializers.EmailField()
@@ -38,3 +49,19 @@ class AuthTokenSerializer(serializers.Serializer):
         
         attrs['user'] = user
         return attrs
+    
+# class UserProfileSerializer(serializers.ModelSerializer):
+#     """Serializer for the user profile"""
+
+#     class Meta:
+#         model = get_user_model()
+#         fields = ['name', 'email']
+#         read_only_fields = ['email']
+
+#     def update(self, instance, validated_data):
+#         """Handle updating user account"""
+#         if 'password' in validated_data:
+#             password = validated_data.pop('password')
+#             instance.set_password(password)
+        
+#         return super().update(instance, validated_data)
