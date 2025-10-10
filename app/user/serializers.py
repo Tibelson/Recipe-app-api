@@ -50,18 +50,3 @@ class AuthTokenSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
     
-# class UserProfileSerializer(serializers.ModelSerializer):
-#     """Serializer for the user profile"""
-
-#     class Meta:
-#         model = get_user_model()
-#         fields = ['name', 'email']
-#         read_only_fields = ['email']
-
-#     def update(self, instance, validated_data):
-#         """Handle updating user account"""
-#         if 'password' in validated_data:
-#             password = validated_data.pop('password')
-#             instance.set_password(password)
-        
-#         return super().update(instance, validated_data)
