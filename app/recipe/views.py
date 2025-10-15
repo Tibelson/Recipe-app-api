@@ -41,3 +41,4 @@ class TagViewSet(mixins.DestroyModelMixin,mixins.CreateModelMixin,mixins.UpdateM
         """create a new tag"""
         serializer.save(user=self.request.user)
     
+    
