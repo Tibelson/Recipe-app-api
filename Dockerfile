@@ -4,35 +4,37 @@ LABEL maintainer="tibelson.com"
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
- 
-
+# Install system dependencies for Pillow and PostgreSQL
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./app /app
 
 WORKDIR /app
-
 EXPOSE 8000
+
 ARG DEV=false
-RUN python -m venv /py &&\
-    /py/bin/pip install --upgrade pip &&\
-    apk add --no-cache postgresql-client jpeg-dev && \
-    apk add --no-cache --virtual .tmp-build-deps  \
-    build-base postgresql-dev musl-dev zlib zlib-dev && \
-    /py/bin/pip install -r /tmp/requirements.txt &&\
-    if [ "$DEV" = "true" ];  \
-    then /py/bin/pip install -r /tmp/requirements.dev.txt; \
+
+RUN python -m venv /py && \
+    /py/bin/pip install --upgrade pip && \
+    apk add --no-cache \
+        postgresql-client \
+        postgresql-dev \
+        jpeg-dev \
+        zlib-dev \
+        build-base && \
+    /py/bin/pip install -r /tmp/requirements.txt && \
+    if [ "$DEV" = "true" ]; then \
+        /py/bin/pip install -r /tmp/requirements.dev.txt; \
     fi && \
     rm -rf /tmp && \
     adduser \
         --disabled-password \
         --no-create-home \
         django-user && \
-        mkdir -p /vol/web/media && \
-        mkdir -p /vol/web/static && \
-        chown -R django-user:django-user /vol && \
-        chmod -R 755 /vol 
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol
 
 ENV PATH="/py/bin:$PATH"
-
 USER django-user
