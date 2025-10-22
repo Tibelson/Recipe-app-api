@@ -105,4 +105,22 @@ class PrivateIngredientAPITests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(models.Ingredient.objects.filter(id=ingredient.id).exists())
 
+    def test_filter_ingredients_assigned_to_recipes(self):
+        """Test filtering ingredients by those assigned to recipes"""
+        ingredient1 = models.Ingredient.objects.create(user=self.user, name='Apple')
+        ingredient2 = models.Ingredient.objects.create(user=self.user, name='Banana')
+        recipe = models.Recipe.objects.create(
+            user=self.user,
+            title='Recipe1',
+            time_minutes=10,
+            price=5.00
+        )
+        recipe.ingredients.add(ingredient1)
+
+        res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
+
+        serializer1 = IngredientSerializer(ingredient1)
+        serializer2 = IngredientSerializer(ingredient2)
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
     
