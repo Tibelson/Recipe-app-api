@@ -1,4 +1,5 @@
 """test for ingredients API"""
+from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
@@ -123,4 +124,29 @@ class PrivateIngredientAPITests(TestCase):
         serializer2 = IngredientSerializer(ingredient2)
         self.assertIn(serializer1.data, res.data)
         self.assertNotIn(serializer2.data, res.data)
+
+    def test_filtered_ingredients_unique(self):
+        """Test filtered ingredients return a unique list"""
+        ingredient = models.Ingredient.objects.create(user=self.user, name='Eggs')
+        models.Ingredient.objects.create(user=self.user, name='Cheese')
+        recipe1 = models.Recipe.objects.create(
+            user=self.user,
+            title='Recipe1',
+            time_minutes=15,
+            price=Decimal('10.00')
+        )
+        recipe2 = models.Recipe.objects.create(
+            user=self.user,
+            title='Recipe2',
+            time_minutes=20,
+            price=Decimal('15.00')
+        )
+        recipe1.ingredients.add(ingredient)
+        recipe2.ingredients.add(ingredient)
+
+        res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
+
+        self.assertEqual(len(res.data), 1)
+
+    
     
